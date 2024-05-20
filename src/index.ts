@@ -18,28 +18,32 @@ app.post('/convert', upload.single('file'), (req, res) => {
     return res.status(400).send('No se ha subido ningún archivo')
   }
 
-  const inputPath = req.file.path;
-  const outputPath = path.join(__dirname, '..', 'uploads', `${req.file.filename}.pdf`)
+  const inputPath = req.file.path
+  const outputPath = path.join(__dirname, 'uploads', `${req.file.filename}.pdf`)
 
-  // Comando unoconv para convertir ODT a PDF
+  // Convertir ODT a PDF
   exec(`unoconv -f pdf -o ${outputPath} ${inputPath}`, (error) => {
     if (error) {
-      console.error('Error al convertir el archivo:', error);
+      console.error('Error al convertir el archivo:', error)
+      fs.unlink(inputPath, (unlinkErr) => {
+        if (unlinkErr) console.error('Error al eliminar el archivo ODT:', unlinkErr)
+      })
       return res.status(500).send('Error al convertir el archivo')
     }
 
-    // Enviar el archivo PDF como respuesta
+    // Enviar el archivo PDF
     res.download(outputPath, (err) => {
       if (err) {
         console.error('Error al enviar el archivo:', err)
+        res.status(500).send('Error al enviar el archivo')
       }
 
-      // Eliminar archivos temporales
+      // Eliminar temporales
       fs.unlink(inputPath, (unlinkErr) => {
-        if (unlinkErr) console.error('Error al eliminar el archivo ODT:', unlinkErr);
+        if (unlinkErr) console.error('Error al eliminar el archivo ODT:', unlinkErr)
       })
       fs.unlink(outputPath, (unlinkErr) => {
-        if (unlinkErr) console.error('Error al eliminar el archivo PDF:', unlinkErr);
+        if (unlinkErr) console.error('Error al eliminar el archivo PDF:', unlinkErr)
       })
     })
   })
