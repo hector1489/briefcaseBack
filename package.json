@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node build/index.ts",
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -28,8 +30,7 @@
       "project": "./tsconfig.json"
     },
     "extends": [
-      "./node_modules/ts-standard/eslintcr.json"
+      "./node_modules/ts-standard/eslint.json"
     ]
   }
 }
-
